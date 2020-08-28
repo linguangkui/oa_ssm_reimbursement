@@ -109,18 +109,20 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 
 	@Override
 	public BaoxiaoBill findBaoxiaoBillByTaskId(String taskId) {
-		Task task = this.taskService.createTaskQuery().taskId(taskId).singleResult();
-		ProcessInstance pi = this.runtimeService.createProcessInstanceQuery()
-										.processInstanceId(task.getProcessInstanceId()).singleResult();
+		Task task = this.taskService.
+				createTaskQuery()
+				.taskId(taskId)
+				.singleResult();
+		ProcessInstance pi = this.runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId())
+				.singleResult();
 		String bussiness_key = pi.getBusinessKey();
-		System.out.println(bussiness_key);
 		String id = "";
 		if (StringUtils.isNotBlank(bussiness_key)) {
 			id = bussiness_key.split("\\.")[1];
 		}
-		
 		BaoxiaoBill bill = baoxiaoBillMapper.selectByPrimaryKey(Long.parseLong(id));
-	
 		return bill;
 	}
 
@@ -128,8 +130,8 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	public List<Comment> findCommentByTaskId(String taskId) {
 		Task task = this.taskService.createTaskQuery().taskId(taskId).singleResult();
 		String processId = task.getProcessInstanceId();
-		
-		List<Comment> list = this.taskService.getProcessInstanceComments(processId);
+		List<Comment> list = this.taskService
+				.getProcessInstanceComments(processId);
 		return list;
 	}
 
@@ -142,7 +144,8 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		//2：获取流程定义ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//3：查询ProcessDefinitionEntiy对象
-		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(processDefinitionId);
+		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService
+				.getProcessDefinition(processDefinitionId);
 		//使用任务对象Task获取流程实例ID
 		String processInstanceId = task.getProcessInstanceId();
 		//使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
@@ -171,7 +174,7 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	@Override
 	public void saveSubmitTask(long id,String taskId, String comment, String outcome,String username) {
 		/**
-		 * 1：在完成之前，添加一个批注信息，向act_hi_comment表中添加数据，用于记录对当前申请人的一些审核信息
+		 * 在完成之前，添加一个批注信息，向act_hi_comment表中添加数据，用于记录对当前申请人的一些审核信息
 		 */
 		//使用任务ID，查询任务对象，获取流程流程实例ID
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -191,21 +194,21 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		//添加批注
 		taskService.addComment(taskId, processInstanceId, comment);
 		/**
-		 * 2：如果连线的名称是“默认提交”，那么就不需要设置，如果不是，就需要设置流程变量
+		 * 如果连线的名称是“默认提交”，那么就不需要设置，如果不是，就需要设置流程变量
 		 * 在完成任务之前，设置流程变量，按照连线的名称，去完成任务
 				 流程变量的名称：outcome
 				 流程变量的值：连线的名称
 		 */
-		Map<String, Object> variables = new HashMap<String,Object>();
+		Map<String, Object> map = new HashMap<String,Object>();
 		if(outcome!=null && !outcome.equals("默认提交")){
-			variables.put("message", outcome);
-			//3：使用任务ID，完成当前人的个人任务，同时流程变量
-			taskService.complete(taskId, variables);
+			map.put("message", outcome);
+			//使用任务ID，完成当前人的个人任务，同时流程变量
+			taskService.complete(taskId, map);
 		} else {
 			taskService.complete(taskId);
 		}
 		/**
-		 * 5：在完成任务之后，判断流程是否结束
+		 * 在完成任务之后，判断流程是否结束
    			如果流程结束了，更新请假单表的状态从1变成2（审核中-->审核完成）
 		 */
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
@@ -218,7 +221,6 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 			bill.setState(2);
 			baoxiaoBillMapper.updateByPrimaryKey(bill);
 		}
-		
 	}
 
 	@Override
@@ -228,10 +230,11 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		//获取流程定义ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//查询流程定义的对象
-		ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()//创建流程定义查询对象，对应表act_re_procdef 
-					.processDefinitionId(processDefinitionId)//使用流程定义ID查询
-					.singleResult();
-		return pd;		// TODO Auto-generated method stub
+		ProcessDefinition pd = repositoryService
+					.createProcessDefinitionQuery()//创建流程定义查询对象，对应表act_re_procdef 
+				    .processDefinitionId(processDefinitionId)//使用流程定义ID查询
+				    .singleResult();
+		return pd;		
 	}
 
 	@Override
@@ -239,13 +242,14 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		//存放坐标
 		Map<String, Object> map = new HashMap<String,Object>();
 		//使用任务ID，查询任务对象
-		Task task = taskService.createTaskQuery()//
+		Task task = taskService.createTaskQuery()
 					.taskId(taskId)//使用任务ID查询
 					.singleResult();
 		//获取流程定义的ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//获取流程定义的实体对象（对应.bpmn文件中的数据）
-		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity)repositoryService.getProcessDefinition(processDefinitionId);
+		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity)repositoryService
+				.getProcessDefinition(processDefinitionId);
 		//流程实例ID
 		String processInstanceId = task.getProcessInstanceId();
 		//使用流程实例ID，查询正在执行的执行对象表，获取当前活动对应的流程实例对象
@@ -264,16 +268,20 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		return map;
 	}
 
-	/**使用部署对象ID和资源图片名称，获取图片的输入流*/
+	/**
+	 * 使用部署对象ID和资源图片名称，获取图片的输入流
+	 * */
 	@Override
-	public InputStream findImageInputStream(String deploymentId,
-			String imageName) {
+	public InputStream findImageInputStream(String deploymentId,String imageName) {
 		return repositoryService.getResourceAsStream(deploymentId, imageName);
 	}
 
 	@Override
-	public Task findTaskByBussinessKey(String bUSSINESS_KEY) {
-		Task task = this.taskService.createTaskQuery().processInstanceBusinessKey(bUSSINESS_KEY).singleResult();
+	public Task findTaskByBussinessKey(String BUSSINESS_KEY) {
+		Task task = this.taskService
+				.createTaskQuery()
+				.processInstanceBusinessKey(BUSSINESS_KEY)
+				.singleResult();
 		return task;
 	}
 
@@ -289,7 +297,7 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	}
 
 	@Override
-	public void deleteProcessDefinitionByDeploymentId(String deploymentId) {
+	public void deleteProcessByDeploymentId(String deploymentId) {
 		this.repositoryService.deleteDeployment(deploymentId, true);
 	}
 	

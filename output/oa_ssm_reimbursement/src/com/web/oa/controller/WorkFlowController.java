@@ -54,7 +54,6 @@ public class WorkFlowController {
 	@RequestMapping("/processDefinitionList")
 	public ModelAndView processDefinitionList() {
 		ModelAndView mv = new ModelAndView();
-		
 		//1:查询部署对象信息，对应表（act_re_deployment）
 		List<Deployment> depList = workFlowService.findDeploymentList();
 		//2:查询流程定义的信息，对应表（act_re_procdef）
@@ -62,7 +61,6 @@ public class WorkFlowController {
 		//放置到上下文对象中
 		mv.addObject("depList", depList);
 		mv.addObject("pdList", pdList);
-		
 		mv.setViewName("workflow_list");
 		return mv;
 	}
@@ -72,26 +70,20 @@ public class WorkFlowController {
 		//设置当前时间
 		baoxiaoBill.setCreatdate(new Date());
 		//设置申请人ID
-		//Employee employee = (Employee) session.getAttribute(Constants.GLOBLE_USER_SESSION);
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		baoxiaoBill.setUserId(activeUser.getId());
 		//更新状态从0变成1（初始录入-->审核中）
 		baoxiaoBill.setState(1);
 		baoxiaoService.saveBaoxiao(baoxiaoBill);
-		
 		workFlowService.saveStartProcess(baoxiaoBill.getId(), activeUser.getUsername());
-		
 		return "redirect:/myTaskList";
 	}
 	
 	@RequestMapping("/myTaskList")
 	public ModelAndView getTaskList(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
-		
-		//String name = ((Employee)session.getAttribute(Constants.GLOBLE_USER_SESSION)).getName();
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		List<Task> list = workFlowService.findTaskListByName(activeUser.getUsername());
-		
 		mv.addObject("taskList", list);
 		mv.setViewName("workflow_task");
 		return mv;
@@ -100,23 +92,19 @@ public class WorkFlowController {
 	@RequestMapping("/viewTaskForm")
 	public ModelAndView viewTaskForm(String taskId) {
 		ModelAndView mv = new ModelAndView();
-		
 		BaoxiaoBill bill = this.workFlowService.findBaoxiaoBillByTaskId(taskId);
 		List<Comment> list = this.workFlowService.findCommentByTaskId(taskId);
 		List<String> outcomeList = this.workFlowService.findOutComeListByTaskId(taskId);
-		
 		mv.addObject("baoxiaoBill", bill);
 		mv.addObject("commentList", list);
 		mv.addObject("outcomeList", outcomeList);
 		mv.addObject("taskId", taskId);
-		
 		mv.setViewName("approve_baoxiao");
 		return mv;
 	}
 	
 	@RequestMapping("/submitTask")
 	public String submitTask(long id,String taskId,String comment,String outcome,HttpSession session){
-		//String username = ((Employee)session.getAttribute(Constants.GLOBLE_USER_SESSION)).getName();
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		String username = activeUser.getUsername();
 		this.workFlowService.saveSubmitTask(id, taskId, comment, outcome, username);
@@ -179,8 +167,8 @@ public class WorkFlowController {
 	 */
 	@RequestMapping("/delDeployment")
 	public String delDeployment(String deploymentId){
-		//使用部署对象ID，删除流程定义
-		workFlowService.deleteProcessDefinitionByDeploymentId(deploymentId);
+		//使用部署对象ID，删除流程部署对象
+		workFlowService.deleteProcessByDeploymentId(deploymentId);
 		return "redirect:/processDefinitionList";
 	}
 	

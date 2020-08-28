@@ -115,7 +115,6 @@ public class EmployeeController {
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		List<SysRole> roles = sysService.findAllRoles();
 		List<MenuTree> allMenuAndPermissions = sysService.getAllMenuAndPermision();
-		
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("allRoles", roles);
 		mv.addObject("activeUser",activeUser);

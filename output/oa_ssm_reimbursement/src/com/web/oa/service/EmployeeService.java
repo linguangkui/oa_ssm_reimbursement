@@ -12,16 +12,33 @@ public interface EmployeeService {
 	 * @return
 	 */
 	Employee findEmployeeByName(String name);
-	
-	//根据主键查找员工
+	/**
+	 * 根据主键查找员工
+	 * @param id
+	 * @return
+	 */
 	Employee findEmployeeManager(long id);
-	
+	/**
+	 * 查询所有的员工
+	 * @return
+	 */
 	List<Employee> findUsers();
-	
+	/**
+	 * 查询所有的员工和角色列表
+	 * @return
+	 */
 	List<EmployeeCustom> findUserAndRoleList();
-	
+	/**
+	 * 修改员工的角色
+	 * @param roleId
+	 * @param userId
+	 */
 	void updateEmployeeRole(String roleId,String userId);
-	
+	/**
+	 * 根据level查询所有员工
+	 * @param level
+	 * @return
+	 */
 	List<Employee> findEmployeeByLevel(int level);
 	/**
 	 * 插入员工信息

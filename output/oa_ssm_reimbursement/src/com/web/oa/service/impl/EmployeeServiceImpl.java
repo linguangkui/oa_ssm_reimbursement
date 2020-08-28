@@ -75,7 +75,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 		EmployeeExample.Criteria criteria = example.createCriteria();
 		criteria.andRoleEqualTo(level);
 		List<Employee> list = employeeMapper.selectByExample(example);
-		
 		return list;
 	}
 
