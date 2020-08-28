@@ -22,27 +22,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.web.oa.mapper.BaoxiaoBillMapper;
 import com.web.oa.pojo.ActiveUser;
 import com.web.oa.pojo.BaoxiaoBill;
-import com.web.oa.pojo.Employee;
 import com.web.oa.service.BaoxiaoService;
 import com.web.oa.service.WorkFlowService;
-import com.web.oa.utils.Constants;
-
 
 @Controller
 public class WorkFlowController {
-	
 	@Autowired
 	private WorkFlowService workFlowService;
-	
 	@Autowired
 	private BaoxiaoService baoxiaoService;
-
 	@RequestMapping("/deployProcess")
 	public String deployProcess(String processName,MultipartFile fileName) {
-		
 		try {
 			workFlowService.saveNewDeploye(fileName.getInputStream(), processName);
 		} catch (IOException e) {
