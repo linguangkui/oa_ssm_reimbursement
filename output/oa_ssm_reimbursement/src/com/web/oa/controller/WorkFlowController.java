@@ -83,7 +83,7 @@ public class WorkFlowController {
 		List<Comment> list = this.workFlowService.findCommentByTaskId(taskId);
 		List<String> outcomeList = this.workFlowService.findOutComeListByTaskId(taskId);
 		model.addAttribute("baoxiaoBill", bill);
-		model.addAttribute("commentList", outcomeList);
+		model.addAttribute("commentList", list);
 		model.addAttribute("outcomeList", outcomeList);
 		model.addAttribute("taskId", taskId);
 		return "approve_baoxiao";
