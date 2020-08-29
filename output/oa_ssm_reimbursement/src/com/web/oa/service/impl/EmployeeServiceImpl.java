@@ -2,6 +2,7 @@ package com.web.oa.service.impl;
 
 import java.util.List;
 
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,12 +81,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public void saveEmployee(Employee employee) {
+		String password = employee.getPassword();
+		String salt = employee.getSalt();
+		//进行md5加密
+		Md5Hash md5Hash = new Md5Hash(password, salt, 2);
+		//重新封装员工的密码
+		employee.setPassword(md5Hash.toString());
 		employeeMapper.insertSelective(employee);
-		//封装SysUserRole
+		//根据名字查询出员工信息
+		Employee emp = this.findEmployeeByName(employee.getName());
+		//封装员工信息到SysUserRole
 		SysUserRole userRole = new SysUserRole();
-		userRole.setId(employee.getId().toString());
-		userRole.setSysUserId(employee.getName());
-		userRole.setSysRoleId(employee.getRole().toString());
+		userRole.setId(emp.getId().toString());
+		userRole.setSysUserId(emp.getName());
+		userRole.setSysRoleId(emp.getRole().toString());
 		userRoleMapper.insertSelective(userRole);
 		}
 
