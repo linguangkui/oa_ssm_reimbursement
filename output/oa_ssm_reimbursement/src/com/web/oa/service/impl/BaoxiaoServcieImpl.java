@@ -53,13 +53,4 @@ public class BaoxiaoServcieImpl implements BaoxiaoService {
 	public int deleteBaoxiaoBillById(Long id) {
 		return baoxiaoBillMapper.deleteByPrimaryKey(id);
 	}
-
-	@Override
-	public List<BaoxiaoBill> findLeaveBillListByUser(Long id) {
-		BaoxiaoBillExample example = new BaoxiaoBillExample();
-		BaoxiaoBillExample.Criteria criteria = example.createCriteria();
-		criteria.andUserIdEqualTo(id);
-		return baoxiaoBillMapper.selectByExample(example);
-	}
-
 }

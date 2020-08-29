@@ -32,34 +32,31 @@ public class BaoxiaoBillController {
 	@Autowired
 	private WorkFlowService workFlowService;
 	
-	/**
-	 * 显示我的报销单列表
-	 * @return
-	 */
+	//显示当前待办人的报销单
 	@RequestMapping("/myBaoxiaoBill")
-	public String home(ModelMap model,HttpSession session){
-		//1：查询所有的请假信息（对应a_leavebill），返回List<LeaveBill>
-		//Employee emp = (Employee) session.getAttribute(Constants.GLOBLE_USER_SESSION);
+	public String myBaoxiaoBill(ModelMap model,HttpSession session){
+		//查询所有的请假信息（对应BaoxiaoBill），返回List<LeaveBill>
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
-		List<BaoxiaoBill> list = baoxiaoService.findLeaveBillListByUser(activeUser.getId()); 
+		List<BaoxiaoBill> list = baoxiaoService.findBaoxiaoBillListByUser(activeUser.getId()); 
 		//放置到上下文对象中
 		model.addAttribute("baoxiaoList", list);
 		return "baoxiaobill";
 	}
 	
+	//查看当前流程图
 	@RequestMapping("/viewCurrentImageByBill")
 	public String viewCurrentImageByBill(long billId,ModelMap model) {
 		String BUSSINESS_KEY = Constants.BAOXIAO_KEY + "." + billId;
 		Task task = this.workFlowService.findTaskByBussinessKey(BUSSINESS_KEY);
-		/**一：查看流程图*/
-		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
+		//获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象
 		ProcessDefinition pd = workFlowService.findProcessDefinitionByTaskId(task.getId());
 
 		model.addAttribute("deploymentId", pd.getDeploymentId());
 		model.addAttribute("imageName", pd.getDiagramResourceName());
-		/**二：查看当前活动，获取当期活动对应的坐标x,y,width,height，将4个值存放到Map<String,Object>中*/
+		/*查看当前活动，获取当期活动对应的坐标x,y,width,height，
+		 * 将4个值存放到Map<String,Object>中
+		 * */
 		Map<String, Object> map = workFlowService.findCoordingByTask(task.getId());
-
 		model.addAttribute("acs", map);
 		return "viewimage";
 	}

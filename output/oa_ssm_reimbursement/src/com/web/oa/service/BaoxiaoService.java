@@ -28,10 +28,4 @@ public interface BaoxiaoService {
 	 * @return
 	 */
 	int deleteBaoxiaoBillById(Long id);
-	/**
-	 * 通过员工查询报销单信息
-	 * @param id
-	 * @return
-	 */
-	List<BaoxiaoBill> findLeaveBillListByUser(Long id);
 }

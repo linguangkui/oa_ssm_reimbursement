@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.web.oa.pojo.ActiveUser;
 import com.web.oa.pojo.Employee;
@@ -33,15 +33,12 @@ public class EmployeeController {
 	private SysService sysService;
 	
 	@RequestMapping("/findUserList")
-	public ModelAndView findUserList(String userId) {
-		ModelAndView mv = new ModelAndView();
+	public String findUserList(String userId,Model model) {
 		List<SysRole> allRoles = sysService.findAllRoles();
 		List<EmployeeCustom> list = employeeService.findUserAndRoleList();
-		
-		mv.addObject("userList", list);
-		mv.addObject("allRoles", allRoles);
-		mv.setViewName("userlist");
-		return mv;
+		model.addAttribute("userList", list);
+		model.addAttribute("allRoles", allRoles);
+		return "userlist";
 	}
 	
 	@RequestMapping("/saveUser")
@@ -75,18 +72,14 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping("/toAddRole")
-	public ModelAndView toAddRole() {
+	public String toAddRole(Model model) {
 		List<MenuTree> allPermissions = sysService.loadMenuTree();
 		List<SysPermission> menus = sysService.findAllMenus();
 		List<SysRole> permissionList = sysService.findRolesAndPermissions();
-		
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("allPermissions", allPermissions);
-		mv.addObject("menuTypes", menus);
-		mv.addObject("roleAndPermissionsList", permissionList);
-		mv.setViewName("rolelist");
-		return mv;
-		
+		model.addAttribute("allPermissions", allPermissions);
+		model.addAttribute("menuTypes", menus);
+		model.addAttribute("roleAndPermissionsList", permissionList);
+		return "rolelist";
 	}
 	
 	@RequestMapping("/saveRoleAndPermissions")
@@ -97,7 +90,6 @@ public class EmployeeController {
 		//默认可用
 		role.setAvailable("1");
 		sysService.addRoleAndPermissions(role, permissionIds);
-		
 		return "redirect:/toAddRole";
 	}
 	
@@ -111,16 +103,14 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping("/findRoles")  
-	public ModelAndView findRoles() {
+	public String findRoles(Model model) {
 		ActiveUser activeUser = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		List<SysRole> roles = sysService.findAllRoles();
 		List<MenuTree> allMenuAndPermissions = sysService.getAllMenuAndPermision();
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("allRoles", roles);
-		mv.addObject("activeUser",activeUser);
-		mv.addObject("allMenuAndPermissions", allMenuAndPermissions);
-		mv.setViewName("permissionlist");
-		return mv;
+		model.addAttribute("allRoles", roles);
+		model.addAttribute("activeUser", activeUser);
+		model.addAttribute("allMenuAndPermissions", allMenuAndPermissions);
+		return "permissionlist";
 	}
 	
 	@RequestMapping("/loadMyPermissions")
