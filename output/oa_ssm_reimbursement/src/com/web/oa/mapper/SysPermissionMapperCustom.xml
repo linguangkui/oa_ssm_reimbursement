@@ -144,6 +144,7 @@
                INNER JOIN employee e2 ON e.manager_id = e2.id
 			   INNER JOIN sys_user_role s1 ON e.name=s1.sys_user_id 
 		       INNER JOIN sys_role s2 ON s1.sys_role_id=s2.id
+		 ORDER BY e.id DESC
     </select>
     
     <select id="findRoleAndPermissionListByUserId" resultMap="roleAndPermissionResult" parameterType="java.lang.String">
