@@ -84,8 +84,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		//封装SysUserRole
 		SysUserRole userRole = new SysUserRole();
 		userRole.setId(employee.getId().toString());
-		userRole.setSysRoleId(employee.getRole().toString());
 		userRole.setSysUserId(employee.getName());
+		userRole.setSysRoleId(employee.getRole().toString());
 		userRoleMapper.insertSelective(userRole);
 		}
 
