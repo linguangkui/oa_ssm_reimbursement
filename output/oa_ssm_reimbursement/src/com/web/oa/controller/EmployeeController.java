@@ -56,7 +56,6 @@ public class EmployeeController {
 		return "redirect:/findUserList";		
 	}
 	
-	
 	@RequestMapping("/assignRole")
 	@ResponseBody
 	public Map<String, String> assignRole(String roleId,String userId) {
@@ -159,4 +158,5 @@ public class EmployeeController {
 			out.write("</script>");
 		}
 	}
+	
 }
