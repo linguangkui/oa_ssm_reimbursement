@@ -3,6 +3,7 @@ package com.web.oa.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -148,10 +149,14 @@ public class WorkFlowController {
 	
 	//删除部署信息
 	@RequestMapping("/delDeployment")
-	public String delDeployment(String deploymentId){
+	public void delDeployment(String deploymentId,HttpServletResponse response) throws Exception{
+		PrintWriter out = response.getWriter();
 		//使用部署对象ID，删除流程部署对象
 		workFlowService.deleteProcessByDeploymentId(deploymentId);
-		return "redirect:/processDefinitionList";
+		out.write("<script type=\"text/javascript\">");
+		out.write("alert(\"删除成功！\");");
+		out.write("window.location.href=\"processDefinitionList\"");
+		out.write("</script>");
 	}
 	
 }
