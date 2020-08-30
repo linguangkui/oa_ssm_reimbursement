@@ -12,7 +12,6 @@ import com.web.oa.service.BaoxiaoService;
 
 @Service
 public class BaoxiaoServcieImpl implements BaoxiaoService {
-	
 	@Autowired
 	private BaoxiaoBillMapper baoxiaoBillMapper;
 
@@ -28,19 +27,18 @@ public class BaoxiaoServcieImpl implements BaoxiaoService {
 	public void saveBaoxiao(BaoxiaoBill baoxiaoBill){
 		//获取请假单ID
 		Long id = baoxiaoBill.getId();
-		/**新增保存*/
+		//新增保存
 		if(id==null){
-			//1：从Session中获取当前用户对象，将LeaveBill对象中user与Session中获取的用户对象进行关联
+			//从Session中获取当前用户对象，将LeaveBill对象中user与Session中获取的用户对象进行关联
 			//leaveBill.setUser(SessionContext.get());//建立管理关系
-			//2：保存请假单表，添加一条数据
+			//保存请假单表，添加一条数据
 			baoxiaoBillMapper.insert(baoxiaoBill);
 		}
 		/**更新保存*/
 		else{
-			//1：执行update的操作，完成更新
+			//执行update的操作，完成更新
 			baoxiaoBillMapper.updateByPrimaryKey(baoxiaoBill);
 		}
-
 	}
 
 	@Override

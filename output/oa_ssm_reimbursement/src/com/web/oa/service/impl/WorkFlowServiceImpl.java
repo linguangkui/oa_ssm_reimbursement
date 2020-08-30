@@ -48,15 +48,15 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	@Autowired
 	private HistoryService historyService;
 	
-	/**部署流程定义*/
+	//部署流程定义
 	@Override
 	public void saveNewDeploye(InputStream in, String filename) {
 		try {
-			//2：将File类型的文件转化成ZipInputStream流
+			//将File类型的文件转化成ZipInputStream流
 			ZipInputStream zipInputStream = new ZipInputStream(in);
 			repositoryService.createDeployment()//创建部署对象
 							.name(filename)//添加部署名称
-							.addZipInputStream(zipInputStream)//
+							.addZipInputStream(zipInputStream)
 							.deploy();//完成部署
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,18 +83,21 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	public void saveStartProcess(long baoxiaoId,String username) {
 		//使用当前对象获取到流程定义的key（对象的名称就是流程定义的key）
 		String key= Constants.BAOXIAO_KEY;
-		/**
-		 *    从Session中获取当前任务的办理人，使用流程变量设置下一个任务的办理人
-			    * inputUser是流程变量的名称，
-			    * 获取的办理人是流程变量的值
+		/*
+		 * 从Session中获取当前任务的办理人，使用流程变量设置下一个任务的办理人
+	     * 	inputUser是流程变量的名称
+	     * 获取的办理人是流程变量的值
 		 */
 		Map<String, Object> variables = new HashMap<String,Object>();
-		variables.put("inputUser", username);//表示惟一用户
+		variables.put("inputUser", username);//表示唯一用户
 
 		//格式：baoxiao.id的形式（使用流程变量）
 		String objId = key+"."+baoxiaoId;
 		variables.put("objId", objId);
-		//5：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
+		/*
+		 * 使用流程定义的key，启动流程实例，同时设置流程变量，
+		 * 同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
+		 */
 		runtimeService.startProcessInstanceByKey(key,objId,variables);
 	}
 
@@ -139,11 +142,11 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	public List<String> findOutComeListByTaskId(String taskId) {
 		//返回存放连线的名称集合
 		List<String> list = new ArrayList<String>();
-		//1:使用任务ID，查询任务对象
+		//使用任务ID，查询任务对象
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-		//2：获取流程定义ID
+		//获取流程定义ID
 		String processDefinitionId = task.getProcessDefinitionId();
-		//3：查询ProcessDefinitionEntiy对象
+		//查询ProcessDefinitionEntiy对象
 		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService
 				.getProcessDefinition(processDefinitionId);
 		//使用任务对象Task获取流程实例ID
@@ -154,9 +157,9 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 					.singleResult();
 		//获取当前活动的id
 		String activityId = pi.getActivityId();
-		//4：获取当前的活动
+		//获取当前的活动
 		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);
-		//5：获取当前活动完成之后连线的名称
+		//获取当前活动完成之后连线的名称
 		List<PvmTransition> pvmList = activityImpl.getOutgoingTransitions();
 		if(pvmList!=null && pvmList.size()>0){
 			for(PvmTransition pvm:pvmList){
@@ -173,31 +176,32 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 
 	@Override
 	public void saveSubmitTask(long id,String taskId, String comment, String outcome,String username) {
-		/**
-		 * 在完成之前，添加一个批注信息，向act_hi_comment表中添加数据，用于记录对当前申请人的一些审核信息
+		/*
+		 * 在完成之前，添加一个批注信息，向act_hi_comment表中添加数据，
+		 * 用于记录对当前申请人的一些审核信息
 		 */
 		//使用任务ID，查询任务对象，获取流程流程实例ID
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		
 		//获取流程实例ID
 		String processInstanceId = task.getProcessInstanceId();
-		/**
-		 * 注意：添加批注的时候，由于Activiti底层代码是使用：
-		 * 		String userId = Authentication.getAuthenticatedUserId();
-			    CommentEntity comment = new CommentEntity();
-			    comment.setUserId(userId);
-			  所有需要从Session中获取当前登录人，作为该任务的办理人（审核人），对应act_hi_comment表中的User_ID的字段，不过不添加审核人，该字段为null
-			 所以要求，添加配置执行使用Authentication.setAuthenticatedUserId();添加当前任务的审核人
+		/*
+		 *注意：添加批注的时候，由于Activiti底层代码是使用：
+		 * String userId = Authentication.getAuthenticatedUserId();
+		 *CommentEntity comment = new CommentEntity();
+		 *comment.setUserId(userId);
+		 * 所有需要从Session中获取当前登录人，作为该任务的办理人（审核人），对应act_hi_comment表中的User_ID的字段，不过不添加审核人，该字段为null
+		 *所以要求，添加配置执行使用Authentication.setAuthenticatedUserId();添加当前任务的审核人
 		 * */
 		//加当前任务的审核人
 		Authentication.setAuthenticatedUserId(username);
 		//添加批注
 		taskService.addComment(taskId, processInstanceId, comment);
-		/**
-		 * 如果连线的名称是“默认提交”，那么就不需要设置，如果不是，就需要设置流程变量
-		 * 在完成任务之前，设置流程变量，按照连线的名称，去完成任务
-				 流程变量的名称：outcome
-				 流程变量的值：连线的名称
+		/*
+		 *如果连线的名称是“默认提交”，那么就不需要设置，如果不是，就需要设置流程变量
+		 *在完成任务之前，设置流程变量，按照连线的名称，去完成任务
+		 *流程变量的名称：outcome
+		 *流程变量的值：连线的名称
 		 */
 		Map<String, Object> map = new HashMap<String,Object>();
 		if(outcome!=null && !outcome.equals("默认提交")){
@@ -207,9 +211,9 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		} else {
 			taskService.complete(taskId);
 		}
-		/**
-		 * 在完成任务之后，判断流程是否结束
-   			如果流程结束了，更新请假单表的状态从1变成2（审核中-->审核完成）
+		/*
+		 *在完成任务之后，判断流程是否结束
+   		 *如果流程结束了，更新请假单表的状态从1变成2（审核中-->审核完成）
 		 */
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
 						.processInstanceId(processInstanceId)//使用流程实例ID查询
@@ -268,7 +272,7 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		return map;
 	}
 
-	/**
+	/*
 	 * 使用部署对象ID和资源图片名称，获取图片的输入流
 	 * */
 	@Override
@@ -300,6 +304,5 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	public void deleteProcessByDeploymentId(String deploymentId) {
 		this.repositoryService.deleteDeployment(deploymentId, true);
 	}
-	
 	
 }
