@@ -150,8 +150,8 @@ public class WorkFlowController {
 	//删除部署信息
 	@RequestMapping("/delDeployment")
 	public void delDeployment(String deploymentId,HttpServletResponse response) throws Exception{
-		PrintWriter out = response.getWriter();
 		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
 		//使用部署对象ID，删除流程部署对象
 		workFlowService.deleteProcessByDeploymentId(deploymentId);
 		out.write("<script type=\"text/javascript\">");
