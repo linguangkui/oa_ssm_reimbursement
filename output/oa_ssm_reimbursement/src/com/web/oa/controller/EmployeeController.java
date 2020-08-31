@@ -79,7 +79,7 @@ public class EmployeeController {
 		model.addAttribute("allPermissions", allPermissions);
 		model.addAttribute("menuTypes", menus);
 		model.addAttribute("roleAndPermissionsList", permissionList);
-		return "redirect:/findRoles";
+		return "rolelist";
 	}
 	
 	@RequestMapping("/saveRoleAndPermissions")
@@ -94,7 +94,7 @@ public class EmployeeController {
 		sysService.addRoleAndPermissions(role, permissionIds);
 		out.write("<script type=\"text/javascript\">");
 		out.write("alert(\"保存成功！\");");
-		out.write("window.location.href=\"toAddRole\"");
+		out.write("window.location.href=\"findRoles\"");
 		out.write("</script>");
 	}
 	
@@ -108,7 +108,7 @@ public class EmployeeController {
 		sysService.addSysPermission(permission);
 		out.write("<script type=\"text/javascript\">");
 		out.write("alert(\"保存成功！\");");
-		out.write("window.location.href=\"toAddRole\"");
+		out.write("window.location.href=\"findRoles\"");
 		out.write("</script>");
 	}
 	
