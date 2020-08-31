@@ -148,7 +148,6 @@ public class EmployeeController {
 	public List<Employee> findNextManager(int level) {
 		level++; //加一，表示下一个级别
 		List<Employee> list = employeeService.findEmployeeByLevel(level);
-		System.out.println(list);
 		return list;
 	}
 	
