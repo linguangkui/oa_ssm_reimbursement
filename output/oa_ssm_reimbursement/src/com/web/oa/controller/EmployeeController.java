@@ -93,7 +93,7 @@ public class EmployeeController {
 		role.setAvailable("1");
 		sysService.addRoleAndPermissions(role, permissionIds);
 		out.write("<script type=\"text/javascript\">");
-		out.write("alert(\"保存成功！\");");
+		out.write("alert(\"保存角色成功！\");");
 		out.write("window.location.href=\"findRoles\"");
 		out.write("</script>");
 	}
@@ -107,8 +107,8 @@ public class EmployeeController {
 		}
 		sysService.addSysPermission(permission);
 		out.write("<script type=\"text/javascript\">");
-		out.write("alert(\"保存成功！\");");
-		out.write("window.location.href=\"findRoles\"");
+		out.write("alert(\"保存权限成功！\");");
+		out.write("window.location.href=\"toAddRole\"");
 		out.write("</script>");
 	}
 	
