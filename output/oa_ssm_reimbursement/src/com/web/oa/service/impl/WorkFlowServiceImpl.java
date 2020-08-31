@@ -131,7 +131,9 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 
 	@Override
 	public List<Comment> findCommentByTaskId(String taskId) {
-		Task task = this.taskService.createTaskQuery().taskId(taskId).singleResult();
+		Task task = this.taskService.createTaskQuery()
+				.taskId(taskId)
+				.singleResult();
 		String processId = task.getProcessInstanceId();
 		List<Comment> list = this.taskService
 				.getProcessInstanceComments(processId);
@@ -143,7 +145,9 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		//返回存放连线的名称集合
 		List<String> list = new ArrayList<String>();
 		//使用任务ID，查询任务对象
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		Task task = taskService.createTaskQuery()
+				.taskId(taskId)
+				.singleResult();
 		//获取流程定义ID
 		String processDefinitionId = task.getProcessDefinitionId();
 		//查询ProcessDefinitionEntiy对象
