@@ -72,40 +72,44 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping("/toAddRole")
-	public void toAddRole(Model model,HttpServletResponse response) throws Exception {
-		response.setContentType("text/html;charset=UTF-8");
-		PrintWriter out = response.getWriter();
+	public String toAddRole(Model model) {
 		List<MenuTree> allPermissions = sysService.loadMenuTree();
 		List<SysPermission> menus = sysService.findAllMenus();
 		List<SysRole> permissionList = sysService.findRolesAndPermissions();
 		model.addAttribute("allPermissions", allPermissions);
 		model.addAttribute("menuTypes", menus);
 		model.addAttribute("roleAndPermissionsList", permissionList);
-		out.write("<script type=\"text/javascript\">");
-		out.write("alert(\"保存成功！\");");
-		out.write("window.location.href=\"findRoles\"");
-		out.write("</script>");
-		//return "rolelist";
+		return "redirect:/findRoles";
 	}
 	
 	@RequestMapping("/saveRoleAndPermissions")
-	public String saveRoleAndPermissions(SysRole role,int[] permissionIds) {
+	public void saveRoleAndPermissions(SysRole role,int[] permissionIds,HttpServletResponse response) throws Exception {
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
 		//设置role主键，使用uuid
 		String uuid = UUID.randomUUID().toString();
 		role.setId(uuid);
 		//默认可用
 		role.setAvailable("1");
 		sysService.addRoleAndPermissions(role, permissionIds);
-		return "redirect:/toAddRole";
+		out.write("<script type=\"text/javascript\">");
+		out.write("alert(\"保存成功！\");");
+		out.write("window.location.href=\"toAddRole\"");
+		out.write("</script>");
 	}
 	
 	@RequestMapping("/saveSubmitPermission")
-	public String saveSubmitPermission(SysPermission permission) {
+	public void saveSubmitPermission(SysPermission permission,HttpServletResponse response) throws Exception {
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
 		if (permission.getAvailable() == null) {
 			permission.setAvailable("0");
 		}
 		sysService.addSysPermission(permission);
-		return "redirect:/toAddRole";
+		out.write("<script type=\"text/javascript\">");
+		out.write("alert(\"保存成功！\");");
+		out.write("window.location.href=\"toAddRole\"");
+		out.write("</script>");
 	}
 	
 	@RequestMapping("/findRoles")  
