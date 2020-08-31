@@ -1,5 +1,6 @@
 package com.web.oa.controller;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -71,14 +72,20 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping("/toAddRole")
-	public String toAddRole(Model model) {
+	public void toAddRole(Model model,HttpServletResponse response) throws Exception {
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
 		List<MenuTree> allPermissions = sysService.loadMenuTree();
 		List<SysPermission> menus = sysService.findAllMenus();
 		List<SysRole> permissionList = sysService.findRolesAndPermissions();
 		model.addAttribute("allPermissions", allPermissions);
 		model.addAttribute("menuTypes", menus);
 		model.addAttribute("roleAndPermissionsList", permissionList);
-		return "rolelist";
+		out.write("<script type=\"text/javascript\">");
+		out.write("alert(\"保存成功！\");");
+		out.write("window.location.href=\"findRoles\"");
+		out.write("</script>");
+		//return "rolelist";
 	}
 	
 	@RequestMapping("/saveRoleAndPermissions")
